@@ -1,4 +1,4 @@
-function [J grad] = nnCostFunction(nn_params, ...
+function [J, grad] = nnCostFunction(nn_params, ...
                                    input_layer_size, ...
                                    hidden_layer_size, ...
                                    num_labels, ...
@@ -62,30 +62,41 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 % -------------------------------------------------------------
+eye_matrix = eye(num_labels);
+y_matrix = eye_matrix(y,:);
+
+a1 = [ones(m,1) X];
+z2 = a1*Theta1';
+a2 = sigmoid(z2);
+a2 = [ones(m,1) a2];
+z3 = a2*Theta2';
+a3 = sigmoid(z3);
+
+J = -(sum(sum(y_matrix.*log(a3))) + sum(sum( (1-y_matrix).*log(1-a3) )) )/m;
+
+d3 = a3 - y_matrix;       
+d2 = (d3*Theta2(:,2:end)).*(sigmoidGradient(z2));
+delta_1 = d2'*a1;
+delta_2 = d3'*a2;
+Theta1_grad = delta_1/m;
+Theta2_grad = delta_2/m;
+
+Theta1(:,1) = zeros(size(Theta1, 1),1);
+Theta2(:,1) = zeros(size(Theta2, 1),1);
+
+reg = sum(sum(Theta1.^2)) + sum(sum(Theta2.^2));
+J = J + lambda*reg/(2*m);
+
+Theta1 = lambda*Theta1/m;
+Theta2 = lambda*Theta2/m;
+
+Theta1_grad = Theta1_grad + Theta1;
+Theta2_grad = Theta2_grad + Theta2;
 
 % =========================================================================
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
-
 
 end
