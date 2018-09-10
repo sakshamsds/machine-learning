@@ -21,13 +21,14 @@ idx = zeros(size(X,1), 1);
 % Note: You can use a for-loop over the examples to compute this.
 %
 
+for i=1:K
+    minus_matrix = bsxfun(@minus,X, centroids(i,:));
+    distance = sum(minus_matrix.^2,2);
+    dist_matrix(:,i) = distance;    
+end
 
-
-
-
-
+[~, idx] = min(dist_matrix,[],2);
 
 % =============================================================
 
 end
-
