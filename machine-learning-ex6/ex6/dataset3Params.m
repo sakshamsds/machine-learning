@@ -22,13 +22,25 @@ sigma = 0.3;
 %  Note: You can compute the prediction error using 
 %        mean(double(predictions ~= yval))
 %
+C_arr = [0.01 0.03 0.1 0.3 1 3 10 30];
+sigma_arr = [0.01 0.03 0.1 0.3 1 3 10 30];
+results = zeros(64,3);
+i = 0;
 
+for temp_C=C_arr
+    for temp_sigma=sigma_arr
+        i = i+1;
+        model= svmTrain(X, y, temp_C, @(x1, x2) gaussianKernel(x1, x2, temp_sigma)); 
+        predictions = svmPredict(model,Xval);
+        error = mean(double(predictions ~= yval));
+        results(i,:) = [temp_C temp_sigma error];
+    end
+end
 
+sorted_results = sortrows(results, 3); % sort matrix by column #3, the error, ascending
 
-
-
-
-
+C = sorted_results(1,1);
+sigma = sorted_results(1,2);
 % =========================================================================
 
 end
